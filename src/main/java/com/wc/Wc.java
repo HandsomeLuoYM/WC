@@ -11,8 +11,6 @@ import java.io.FileNotFoundException;
  */
 public class Wc {
     public static void main(String[] args) throws FileNotFoundException {
-        File file = new File("D:\\picture\\a.txt");
-        FileInputStream fileInputStream = new FileInputStream("D:\\picture\\a.txt");
 
     }
 }
