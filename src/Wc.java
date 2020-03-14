@@ -24,22 +24,31 @@ public class Wc {
 
     /**
      * 递归判断文件
-     * @param file 文件
+     * @param split 递归的指令集
+     * @exception  IOException
      * @return 返回名字集
      */
-    public static String[] judgeFile(File file){
+    public static void recursionOperation(String[] split) throws IOException {
+        File file = new File(split[3]);
         if (file.isDirectory()){
+            //判断为文件
             File[] files = file.listFiles();
             for(File f :files){
-                judgeFile(f);
+                split[3] = f.getPath();
+                recursionOperation(split);
             }
         }else {
+            //判断为非文件
             String fileName = file.getName();
+            //判断是否为C后缀文件
             if ("c".equals(fileName.substring(fileName.lastIndexOf(".")+1,fileName.length()))){
-                System.out.println(file.getName());
+                String[] strings = new String[]{split[0],split[2],file.getPath()};
+                System.out.println(file.getPath());
+                System.out.println("--------------------------");
+                basicOperation(strings);
+                System.out.println("--------------------------");
             }
         }
-        return null;
     }
 
     /**
@@ -58,7 +67,9 @@ public class Wc {
                 blankCount++;
             }else if (line.matches(MULTIPLE_ROWS_EXPLAIN_REGEX_HEAD)){
                 explainCount++;
-                b = true;
+                if (!line.matches(MULTIPLE_ROWS_EXPLAIN_REGEX_TAIL)){
+                    b = true;
+                }
             }else if (b){
                 explainCount++;
                 if (line.matches(MULTIPLE_ROWS_EXPLAIN_REGEX_TAIL)){
@@ -82,11 +93,12 @@ public class Wc {
 
         //初始化统计数据参数
         int characterCount = 0, lineCount = 0, wordCount = 0;
+        //判断输入文件是否正确
         File file = new File(split[2]);
         String fileName = file.getName();
         if (!split[2].matches(FILE_REGEX) || !file.exists() || file.isDirectory()
                 || !"c".equals(fileName.substring(fileName.lastIndexOf(".")+1,fileName.length()))){
-            System.out.println("Error：该路径非C语言文件 或 不存在 或 文件错误！");
+            System.out.println("Error：该路径非 .C后缀文件 或 文件不存在 或 文件路径错误！");
             return;
         }
         //获取本地文件的缓存流读取器，方便后面操作
@@ -118,13 +130,12 @@ public class Wc {
                 specialOperation(br);
                 break;
             default:
-                System.out.println("输入错误！");
+                System.out.println("Error：无效命令！");
         }
         br.close();
     }
 
     public static void main(String[] args) throws IOException {
-
         //获取用户输入指令
         Scanner scanner = new Scanner(System.in);
         //循环来获取用户操作
@@ -134,12 +145,11 @@ public class Wc {
             if("wc.exe".equals(split[0]) && 3 == split.length){
                 basicOperation(split);
             }else if("wc.exe".equals(split[0]) && 4 == split.length){
-
+                recursionOperation(split);
             }else {
                 System.out.println("Error：输入的指令错误");
             }
         }
-
     }
 
 }
